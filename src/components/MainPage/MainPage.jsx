@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DropArea from "../DropArea";
 import ListCertificates from "../ListCertificates";
-// import asn1Parser from "../../helpers/asn1-parser";
+import asn1Parser from "../../helpers/asn1-parser";
 // import useLocalStorage from "../../hooks/useLocalStorage";
 import s from "./MainPage.module.css";
 
@@ -11,7 +11,9 @@ function MainPage() {
   const [listName, setListName] = useState([]);
 
   useEffect(() => {
-    listData.map((i) => setListName(new Set([...listName, i.name])));
+    listData.map((i) =>
+      setListName((listName) => new Set([...listName, i.name]))
+    );
   }, [listData]);
 
   const dragStartHandler = (e) => {
@@ -26,16 +28,18 @@ function MainPage() {
 
   const onDropHandler = (e) => {
     e.preventDefault();
-
+    const reader = new FileReader();
     setListData((listData) => [...listData, ...e.dataTransfer.files]);
-    // for (let i of e.dataTransfer.files.name) {
-    //   const reader = new FileReader();
-    //   reader.readAsBinaryString(i);
-    //   reader.onload = () => {
-    //     let result = asn1Parser(reader.result);
-    //   console.log(result);
-    //   };
-    // }
+
+    listData.map((i) => {
+      reader.readAsBinaryString(i);
+      reader.onload = () => {
+        let result = asn1Parser(reader.result);
+        // let decoder = new TextDecoder();
+        // let str = decoder.decode(result.sub[0].stream.enc);
+        console.log(result.sub[0]);
+      };
+    });
 
     setDrag(false);
   };

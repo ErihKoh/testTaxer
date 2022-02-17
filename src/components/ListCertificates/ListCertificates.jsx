@@ -1,6 +1,4 @@
 import React from "react";
-import "shortid";
-import shortid from "shortid";
 import s from "./ListCertificates.module.css";
 
 const ListCertificates = ({ names }) => {
