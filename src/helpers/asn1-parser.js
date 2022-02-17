@@ -7,7 +7,7 @@ const asn1Parser = (file) => {
   }
 
   //   console.log(result.sub[0]);
-  return result.sub[0];
+  return result;
 };
 
 export default asn1Parser;
