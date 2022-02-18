@@ -4,20 +4,39 @@ import TextArea from "../TextArea";
 import ListCertificates from "../ListCertificates";
 // import ButtonAdd from "../ButtonAdd";
 import asn1Parser from "../../helpers/asn1-parser";
-// import useLocalStorage from "../../hooks/useLocalStorage";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import s from "./MainPage.module.css";
 
 function MainPage() {
   const [drag, setDrag] = useState(false);
   const [listData, setListData] = useState([]);
-  const [listName, setListName] = useState([]);
+  const [listName, setListName] = useState(
+    () =>
+      Object.keys(localStorage).filter(
+        (i) => i != "editorHasEmittedBundle" && i != "editorLastConnected"
+      ) ?? []
+  );
   const [isDropArea, setIsDropArea] = useState(false);
 
   useEffect(() => {
-    listData.map((i) =>
-      setListName((listName) => new Set([...listName, i.name]))
-    );
+    listData.map((i) => {
+      setListName((listName) => new Set([...listName, i.name]));
+    });
   }, [listData]);
+
+  useEffect(() => {
+    listData.map(
+      (i) => {
+        const reader = new FileReader();
+        reader.readAsBinaryString(i);
+        reader.onload = () => {
+          let result = asn1Parser(reader.result);
+          window.localStorage.setItem(i.name, JSON.stringify(result));
+        };
+      },
+      [listData]
+    );
+  });
 
   const onClickHandler = () => {
     setIsDropArea((isDropArea) => !isDropArea);
@@ -35,16 +54,8 @@ function MainPage() {
 
   const onDropHandler = (e) => {
     e.preventDefault();
-    const reader = new FileReader();
-    setListData((listData) => [...listData, ...e.dataTransfer.files]);
 
-    listData.map((i) => {
-      reader.readAsDataURL(i);
-      reader.onload = (e) => {
-        // let result = asn1Parser(reader.result);
-        console.log(reader.result);
-      };
-    });
+    setListData((listData) => [...listData, ...e.dataTransfer.files]);
 
     setDrag(false);
   };

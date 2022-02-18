@@ -1,5 +1,4 @@
 import ASN1 from "@lapo/asn1js";
-import Hex from "@lapo/asn1js/hex";
 
 const asn1Parser = (file) => {
   const result = ASN1.decode(file);
@@ -7,7 +6,7 @@ const asn1Parser = (file) => {
     throw "Неверная структура конверта сертификата (ожидается SEQUENCE)";
   }
 
-  return result;
+  return result.sub[0].stream.enc;
 };
 
 export default asn1Parser;
