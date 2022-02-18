@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import DropArea from "../DropArea";
+import TextArea from "../TextArea";
 import ListCertificates from "../ListCertificates";
+// import ButtonAdd from "../ButtonAdd";
 import asn1Parser from "../../helpers/asn1-parser";
 // import useLocalStorage from "../../hooks/useLocalStorage";
 import s from "./MainPage.module.css";
@@ -9,12 +11,17 @@ function MainPage() {
   const [drag, setDrag] = useState(false);
   const [listData, setListData] = useState([]);
   const [listName, setListName] = useState([]);
+  const [isDropArea, setIsDropArea] = useState(false);
 
   useEffect(() => {
     listData.map((i) =>
       setListName((listName) => new Set([...listName, i.name]))
     );
   }, [listData]);
+
+  const onClickHandler = () => {
+    setIsDropArea((isDropArea) => !isDropArea);
+  };
 
   const dragStartHandler = (e) => {
     e.preventDefault();
@@ -32,12 +39,10 @@ function MainPage() {
     setListData((listData) => [...listData, ...e.dataTransfer.files]);
 
     listData.map((i) => {
-      reader.readAsBinaryString(i);
-      reader.onload = () => {
-        let result = asn1Parser(reader.result);
-        // let decoder = new TextDecoder();
-        // let str = decoder.decode(result.sub[0].stream.enc);
-        console.log(result.sub[0]);
+      reader.readAsDataURL(i);
+      reader.onload = (e) => {
+        // let result = asn1Parser(reader.result);
+        console.log(reader.result);
       };
     });
 
@@ -45,13 +50,22 @@ function MainPage() {
   };
   return (
     <div className={s.container}>
-      <DropArea
-        drag={drag}
-        onDropHandler={onDropHandler}
-        dragLeaveHandler={dragLeaveHandler}
-        dragStartHandler={dragStartHandler}
-      />
-      <ListCertificates names={[...listName]} />
+      <div className={s.containerCrtf}>
+        {isDropArea ? (
+          <TextArea />
+        ) : (
+          <DropArea
+            drag={drag}
+            onDropHandler={onDropHandler}
+            dragLeaveHandler={dragLeaveHandler}
+            dragStartHandler={dragStartHandler}
+          />
+        )}
+        <ListCertificates names={[...listName]} />
+      </div>
+      <button onClick={onClickHandler} className={s.button}>
+        {isDropArea ? "add" : "cancel"}
+      </button>
     </div>
   );
 }
