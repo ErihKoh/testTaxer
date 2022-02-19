@@ -10,7 +10,7 @@ import s from "./MainPage.module.css";
 function MainPage() {
   const [drag, setDrag] = useState(false);
   const [certData, setCertData] = useState("");
-  const [listData, setListData] = useState([]);
+  const [listFiles, setListFiles] = useState([]);
   const [listName, setListName] = useState(
     () =>
       Object.keys(localStorage).filter(
@@ -20,13 +20,13 @@ function MainPage() {
   const [isDropArea, setIsDropArea] = useState(false);
 
   useEffect(() => {
-    listData.map((i) =>
+    listFiles.map((i) =>
       setListName((listName) => new Set([...listName, i.name]))
     );
-  }, [listData]);
+  }, [listFiles]);
 
   useEffect(() => {
-    listData.map(
+    listFiles.map(
       (i) => {
         const reader = new FileReader();
         reader.readAsBinaryString(i);
@@ -37,7 +37,7 @@ function MainPage() {
           );
         });
       },
-      [listData]
+      [listFiles]
     );
   });
 
@@ -62,7 +62,7 @@ function MainPage() {
   const onDropHandler = (e) => {
     e.preventDefault();
 
-    setListData((listData) => [...listData, ...e.dataTransfer.files]);
+    setListFiles((listFiles) => [...listFiles, ...e.dataTransfer.files]);
 
     setDrag(false);
   };
