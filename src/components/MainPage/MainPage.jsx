@@ -4,7 +4,7 @@ import TextArea from "../TextArea";
 import ListCertificates from "../ListCertificates";
 // import ButtonAdd from "../ButtonAdd";
 import asn1Parser from "../../helpers/asn1-parser";
-import useLocalStorage from "../../hooks/useLocalStorage";
+// import useLocalStorage from "../../hooks/useLocalStorage";
 import s from "./MainPage.module.css";
 
 function MainPage() {
@@ -13,15 +13,15 @@ function MainPage() {
   const [listName, setListName] = useState(
     () =>
       Object.keys(localStorage).filter(
-        (i) => i != "editorHasEmittedBundle" && i != "editorLastConnected"
+        (i) => i !== "editorHasEmittedBundle" && i !== "editorLastConnected"
       ) ?? []
   );
   const [isDropArea, setIsDropArea] = useState(false);
 
   useEffect(() => {
-    listData.map((i) => {
-      setListName((listName) => new Set([...listName, i.name]));
-    });
+    listData.map((i) =>
+      setListName((listName) => new Set([...listName, i.name]))
+    );
   }, [listData]);
 
   useEffect(() => {
@@ -29,10 +29,11 @@ function MainPage() {
       (i) => {
         const reader = new FileReader();
         reader.readAsBinaryString(i);
-        reader.onload = () => {
-          let result = asn1Parser(reader.result);
-          window.localStorage.setItem(i.name, JSON.stringify(result));
-        };
+        return (reader.onload = () =>
+          window.localStorage.setItem(
+            i.name,
+            JSON.stringify(asn1Parser(reader.result))
+          ));
       },
       [listData]
     );
