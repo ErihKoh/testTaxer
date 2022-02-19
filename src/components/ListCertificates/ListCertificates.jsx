@@ -6,11 +6,18 @@ const ListCertificates = ({ names, onClick }) => {
     <>
       <ul className={s.container}>
         {names.length !== 0 ? (
-          names.map((i) => (
-            <li key={i} data-name={i} onClick={onClick} className={s.certList}>
-              {i}
-            </li>
-          ))
+          names
+            .filter((i) => i)
+            .map((i) => (
+              <li
+                key={i}
+                data-name={i}
+                onClick={onClick}
+                className={s.certList}
+              >
+                {i}
+              </li>
+            ))
         ) : (
           <h5>don't have certificates</h5>
         )}

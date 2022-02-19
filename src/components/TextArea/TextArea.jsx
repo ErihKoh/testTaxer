@@ -1,12 +1,13 @@
 import React from "react";
 import s from "./TextArea.module.css";
 
-const TextArea = ({ data }) => {
-  return data === "" ? (
-    <div className={s.textArea}> data from file</div>
-  ) : (
+const TextArea = ({ commonName, issuerCN, validFrom, validTill }) => {
+  return (
     <ul className={s.textArea}>
-      <li>{data}</li>
+      <li>{commonName}</li>
+      <li>{issuerCN}</li>
+      <li>{validFrom}</li>
+      <li>{validTill}</li>
     </ul>
   );
 };
