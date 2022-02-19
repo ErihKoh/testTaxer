@@ -1,6 +1,6 @@
 .dropArea {
-  width: 300px;
-  height: 300px;
+  width: 500px;
+  height: 500px;
   border: 5px dashed black;
   display: flex;
   align-items: center;
@@ -8,8 +8,8 @@
 }
 
 .emptyDropArea {
-  width: 300px;
-  height: 300px;
+  width: 500px;
+  height: 500px;
   border: 2px dashed lightgray;
   display: flex;
   align-items: center;

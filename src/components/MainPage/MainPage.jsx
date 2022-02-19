@@ -9,6 +9,7 @@ import s from "./MainPage.module.css";
 
 function MainPage() {
   const [drag, setDrag] = useState(false);
+  const [certData, setCertData] = useState("");
   const [listData, setListData] = useState([]);
   const [listName, setListName] = useState(
     () =>
@@ -29,18 +30,23 @@ function MainPage() {
       (i) => {
         const reader = new FileReader();
         reader.readAsBinaryString(i);
-        return (reader.onload = () =>
+        return (reader.onload = () => {
           window.localStorage.setItem(
             i.name,
             JSON.stringify(asn1Parser(reader.result))
-          ));
+          );
+        });
       },
       [listData]
     );
   });
 
-  const onClickHandler = () => {
+  const onClickButtonHandler = () => {
     setIsDropArea((isDropArea) => !isDropArea);
+  };
+
+  const onClickDataHandler = (e) => {
+    setCertData(e.target.dataset.name);
   };
 
   const dragStartHandler = (e) => {
@@ -64,7 +70,7 @@ function MainPage() {
     <div className={s.container}>
       <div className={s.containerCrtf}>
         {isDropArea ? (
-          <TextArea />
+          <TextArea data={certData} />
         ) : (
           <DropArea
             drag={drag}
@@ -73,9 +79,9 @@ function MainPage() {
             dragStartHandler={dragStartHandler}
           />
         )}
-        <ListCertificates names={[...listName]} />
+        <ListCertificates names={[...listName]} onClick={onClickDataHandler} />
       </div>
-      <button onClick={onClickHandler} className={s.button}>
+      <button onClick={onClickButtonHandler} className={s.button}>
         {isDropArea ? "add" : "cancel"}
       </button>
     </div>
