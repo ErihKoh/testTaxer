@@ -10,12 +10,12 @@ const ListCertificates = ({ names, onClick }) => {
             .filter((i) => i)
             .map((i) => (
               <li
-                key={i}
-                data-name={i}
-                onClick={onClick}
+                key={i.idName}
+                data-name={i.idName}
                 className={s.certList}
+                onClick={onClick}
               >
-                {i}
+                {i.idName}
               </li>
             ))
         ) : (

@@ -2,50 +2,31 @@ import React, { useEffect, useState } from "react";
 import DropArea from "../DropArea";
 import TextArea from "../TextArea";
 import ListCertificates from "../ListCertificates";
-import useLocalStorage from "../../hooks/useLocalStorage";
-// import ButtonAdd from "../ButtonAdd";
 import asn1Parser from "../../helpers/asn1-parser";
 import setStorage from "../../helpers/set-local-storage";
+import getStorage from "../../helpers/get-local-storage";
 
 import s from "./MainPage.module.css";
 
 function MainPage() {
   const [drag, setDrag] = useState(false);
-  const [certData, setCertData] = useState([]);
-  const [listFiles, setListFiles] = useState(
-    () => Object.values(localStorage) ?? []
-  );
+  const [listFiles, setListFiles] = useState([]);
   const [renderData, setRenderData] = useState({});
-  const [listName, setListName] = useState(
-    () =>
-      Object.keys(localStorage).filter(
-        (i) => i !== "editorHasEmittedBundle" && i !== "editorLastConnected"
-      ) ?? []
-  );
   const [isDropArea, setIsDropArea] = useState(false);
 
   useEffect(() => {
-    listFiles.map((i) => {
-      setListName((listName) => new Set([...listName, i.name]));
-      const reader = new FileReader();
-      reader.readAsBinaryString(i);
-      reader.onload = () => {
-        let result = asn1Parser(reader.result, i.name);
-
-        setStorage(i.name, result);
-        let data = certData.filter((i) => i.idName !== result.idName);
-        setCertData(data);
-      };
-    });
-  }, [listFiles]);
+    const arrStor = getStorage();
+    setListFiles(arrStor);
+  }, []);
 
   const onClickButtonHandler = () => {
     setIsDropArea((isDropArea) => !isDropArea);
   };
 
   const onClickDataHandler = (e) => {
-    setRenderData(certData.filter((i) => i.idName === e.target.dataset.name));
-    console.log(certData);
+    const nameCert = e.target.dataset.name;
+    setRenderData(listFiles.find((i) => i.idName === nameCert));
+    console.log(renderData);
   };
 
   const dragStartHandler = (e) => {
@@ -61,20 +42,23 @@ function MainPage() {
   const onDropHandler = (e) => {
     e.preventDefault();
     let files = e.dataTransfer.files;
-    setListFiles((listFiles) => [...listFiles, ...files]);
+    const reader = new FileReader();
+    reader.readAsBinaryString(files[0]);
+    reader.onload = () => {
+      let result = asn1Parser(reader.result, files[0].name);
 
+      listFiles.some((i) => i.idName === result.idName) ||
+        setListFiles((listFiles) => [...listFiles, result]);
+
+      setStorage(files[0].name, result);
+    };
     setDrag(false);
   };
   return (
     <div className={s.container}>
       <div className={s.containerCrtf}>
         {isDropArea ? (
-          <TextArea
-            commonName={renderData.commonName}
-            issuerCN={renderData.issuerCN}
-            validFrom={renderData.validFrom}
-            validTill={renderData.validTill}
-          />
+          <TextArea data={renderData} />
         ) : (
           <DropArea
             drag={drag}
@@ -83,7 +67,7 @@ function MainPage() {
             dragStartHandler={dragStartHandler}
           />
         )}
-        <ListCertificates names={[...listName]} onClick={onClickDataHandler} />
+        <ListCertificates names={listFiles} onClick={onClickDataHandler} />
       </div>
       <button onClick={onClickButtonHandler} className={s.button}>
         {isDropArea ? "add" : "cancel"}

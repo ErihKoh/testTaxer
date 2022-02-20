@@ -11,7 +11,7 @@ const asn1Parser = (file, fileName) => {
   return {
     idName: fileName,
     result: result.sub[0],
-    commonName: result.sub[0].sub[5].sub[1].sub[0].sub[1].content(),
+    commonName: result.sub[0].sub[5].sub[3].sub[0].sub[1].content(),
     issuerCN: result.sub[0].sub[3].sub[2].sub[0].sub[1].content(),
     validFrom: result.sub[0].sub[4].sub[0].content(),
     validTill: result.sub[0].sub[4].sub[1].content(),
